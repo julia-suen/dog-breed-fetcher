@@ -28,9 +28,11 @@ public class DogApiBreedFetcher implements BreedFetcher {
         Request request = new Request.Builder().url("https://dog.ceo/api/breed/" + breed + "/list").build();
         try (Response response = client.newCall(request).execute()) {
             JSONObject obj = new JSONObject(response.body().string());
+            // If status is error, there is no such breed in the API, throw exception
             if(obj.getString("status").equals("error")) {
                 throw new BreedNotFoundException(breed);
             }
+            // Parse JSON
             JSONArray subBreedArray = obj.getJSONArray("message");
             List<String> subBreeds = new ArrayList<>();
             for (int i = 0; i < subBreedArray.length(); i++) {
